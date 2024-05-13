@@ -21,16 +21,16 @@ __ZNKSt6chrono8durationIxSt5ratioILx1ELx1000000000EEE5countEv:
 	.def	__Z4SortPiii;	.scl	2;	.type	32;	.endef
 __Z4SortPiii:
 	pushl	%ebp
-	movl	%esp, %ebp
-	subl	$56, %esp
-	movl	12(%ebp), %eax
-	cmpl	16(%ebp), %eax
+	movl	%esp, %ebp			## Set Frame pointer
+	subl	$56, %esp			## Make room for local variables
+	movl	12(%ebp), %eax		
+	cmpl	16(%ebp), %eax		## Compare Start and End
 	jge	L9
-	movl	16(%ebp), %eax
-	leal	0(,%eax,4), %edx
-	movl	8(%ebp), %eax
-	addl	%edx, %eax
-	movl	(%eax), %eax
+	movl	16(%ebp), %eax		## Move End into %eax
+	leal	0(,%eax,4), %edx	## Calculate A[End] offset into %edx
+	movl	8(%ebp), %eax		## Move A pointer into %eax
+	addl	%edx, %eax			## Add offset %edx into %eax
+	movl	(%eax), %eax		## Move number in Address %eax into %eax
 	movl	%eax, -20(%ebp)
 	movl	12(%ebp), %eax
 	movl	%eax, -12(%ebp)
