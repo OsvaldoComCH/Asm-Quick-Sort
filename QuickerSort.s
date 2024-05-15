@@ -20,81 +20,89 @@ __ZNKSt6chrono8durationIxSt5ratioILx1ELx1000000000EEE5countEv:
 	.globl	__Z4SortPiii
 	.def	__Z4SortPiii;	.scl	2;	.type	32;	.endef
 __Z4SortPiii:
-	movl	8(%esp), %eax		## Compare before setting frame pointer
+	movl	8(%esp), %eax
 	cmpl	12(%esp), %eax		## if(Start >= End)
-	jge	L9
+	jge	L3
 	pushl	%ebp
-	movl	%esp, %ebp			## Set Frame pointer
-	subl	$16, %esp			## Make room for local variables
-
-	movl	16(%ebp), %eax		## Move End into %eax
-	movl	8(%ebp), %edx	    ## Move A pointer into %edx
-	movl	(%edx,%eax,4), %eax	## Move A[End] into %eax
-	movl	%eax, -12(%ebp)		## Move A[End] in -20(%ebp) (Pivot)
-
-	movl	12(%ebp), %eax
-	movl	%eax, -4(%ebp)		## Move Start into -12(%ebp) (x)
-	movl	12(%ebp), %eax
-	movl	%eax, -8(%ebp)		## Move Start into -16(%ebp) (y)
+	movl	%esp, %ebp
+	subl	$56, %esp
+    pushl   %ebx
+    pushl   %esi
+    pushl   %edi
+	movl	16(%ebp), %eax
+	movl	8(%ebp), %ecx
+	movl	(%ecx,%eax,4), %eax
+	movl	%eax, -20(%ebp)
+	movl	12(%ebp), %esi
+    movl    %esi, %edi
 	jmp	L6
 L8:
-	movl	-8(%ebp), %eax		## Move y into %eax
-	movl	8(%ebp), %ecx		## Move A pointer into %ecx
-	leal	(%ecx,%eax,4), %eax	## Move A[y] address into %eax
-	cmpl	%eax, -12(%ebp)		## if(Pivot <= A[y])
+	movl	-16(%ebp), %eax
+	movl	8(%ebp), %ecx
+	leal	(%ecx,%eax,4), %eax
+	movl	(%eax), %edx
+	cmpl	%edx, -20(%ebp)		## if(Pivot <= A[y])
 	jle	L7
-	
-	movl	-4(%ebp), %edx		## Move x into %edx
-	leal	(%ecx,%edx,4), %edx	## Move A[x] address into %edx
 
-	movl	(%edx), %ecx
-	movl	%ecx, -16(%ebp)		## Move A[x] into -24(%ebp) (Temp)
-	movl	(%eax), %ecx
-	movl	%ecx, (%edx)		## Move A[y] into A[x]
-	movl	-16(%ebp), %ecx
-	movl	%ecx, (%eax)		## Move Temp into A[y]
+    movl    -12(%ebp), %edx
+    leal    (%ecx,%edx,4), %edx
+    movl    (%edx), %ebx
 
-	addl	$1, -4(%ebp)		## ++x
+    movl    (%eax), %ecx
+    movl    %ecx, (%edx)
+
+    movl    %ebx, (%eax)
+
+	addl	$1, %esi		    ## ++x
 L7:
-	addl	$1, -8(%ebp)		## ++y
+	addl	$1, %edi    		## ++y
 L6:
-	movl	-8(%ebp), %eax		## Move y into %eax
+	movl	-16(%ebp), %eax		## Move y into %eax
 	cmpl	16(%ebp), %eax		## if(y <= End)
 	jle	L8
-
-	movl	-4(%ebp), %eax		## Move x into %eax
-	movl	8(%ebp), %ecx		## Move A pointer into %ecx
-	leal	(%ecx,%eax,4), %eax	## Move A[x] address into %eax
-
-	movl	16(%ebp), %edx		## Move End into %edx
-	leal	(%ecx,%edx,4), %edx	## Move A[End] address into %edx
-
-	movl	(%edx), %ecx
-	movl	%ecx, -16(%ebp)		## Move A[End] into -24(%ebp) (Temp)
-	movl	(%eax), %ecx
-	movl	%ecx, (%edx)		## Move A[End] into A[x]
-	movl	-16(%ebp), %ecx
-	movl	%ecx, (%eax)		## Move Temp into A[x]
-
-
-	movl	-4(%ebp), %eax
-	subl	$1, %eax
-	movl	%eax, 8(%esp)		## Move x-1 into 8(%esp) (Parameter End)
-	movl	12(%ebp), %eax
-	movl	%eax, 4(%esp)		## Move Start into 4(%esp) (Parameter Start)
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)		## Move A pointer into (%esp) (Parameter * A)
+	movl	-12(%ebp), %eax		## Move x into %eax
+	leal	0(,%eax,4), %edx	## Calculate A[%eax] offset into %edx
+	movl	8(%ebp), %eax		## Move A pointer into %eax
+	addl	%edx, %eax			## Add offset %edx to %eax
+	movl	(%eax), %eax		## Move long in address %eax into %eax
+	movl	%eax, -24(%ebp)		## Move %eax into -24(%ebp) (Temp)
+	movl	16(%ebp), %eax		## Move End into %eax
+	leal	0(,%eax,4), %edx	## Calculate A[End] offset into %edx
+	movl	8(%ebp), %eax		## Move A pointer into %eax
+	addl	%edx, %eax			## Add offset %edx to %eax
+	movl	-12(%ebp), %edx		## Move x into %edx
+	leal	0(,%edx,4), %ecx	## Calculate A[%edx] offset into %ecx
+	movl	8(%ebp), %edx		## Move A pointer into %edx
+	addl	%ecx, %edx			## Add offset %ecx to %edx
+	movl	(%eax), %eax		## Move long in address %eax into %eax
+	movl	%eax, (%edx)		## Move %eax to address %edx
+	movl	16(%ebp), %eax		## Move End to %eax
+	leal	0(,%eax,4), %edx	## Calculate A[End] offset into %edx
+	movl	8(%ebp), %eax		## Move A pointer into %eax
+	addl	%eax, %edx			## Add %eax to offset %edx
+	movl	-24(%ebp), %eax		## Move Temp to %eax
+	movl	%eax, (%edx)		## Move %eax to address %edx
+	movl	-12(%ebp), %eax		## Move x into %eax
+	subl	$1, %eax			## Subtract 1 from %eax
+	movl	%eax, 8(%esp)		## Move %eax into 8(%esp) (Parameter End)
+	movl	12(%ebp), %eax		## Move Start into %eax
+	movl	%eax, 4(%esp)		## Move %eax into 4(%esp) (Parameter Start)
+	movl	8(%ebp), %eax		## Move A pointer into %eax
+	movl	%eax, (%esp)		## Move %eax into (%esp) (Parameter * A)
 	call	__Z4SortPiii		## Recursive call #1
-	movl	16(%ebp), %eax
-	movl	%eax, 8(%esp)		## Move End into 8(%esp) (Parameter End)
-	movl	-4(%ebp), %eax
-	addl	$1, %eax
-	movl	%eax, 4(%esp)		## Move x+1 into 4(%esp) (Parameter Start)
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)		## Move A pointer into (%esp) (Parameter * A)
-	call	__Z4SortPiii		## Recursive call #2
+	movl	-12(%ebp), %eax		## Move x into %eax
+	leal	1(%eax), %edx		## %edx = %eax + 1
+	movl	16(%ebp), %eax		## Move End into %eax
+	movl	%eax, 8(%esp)		## Move %eax into 8(%esp) (Parameter End)
+	movl	%edx, 4(%esp)		## Move %eax into 4(%esp) (Parameter Start)
+	movl	8(%ebp), %eax		## Move pointer A into %eax
+	movl	%eax, (%esp)		## Move %eax into (%esp) (Parameter * A)
+	call	__Z4SortPiii
+    popl    %edi
+    popl    %esi
+    popl    %ebx
 	leave
-L9:
+L3:
 	ret
 	.section	.text$_ZNSt6chrono8durationIxSt5ratioILx1ELx1000000EEEC1IxvEERKT_,"x"
 	.linkonce discard
