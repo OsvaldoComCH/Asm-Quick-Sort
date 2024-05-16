@@ -25,64 +25,58 @@ __Z4SortPiii:
 	jge	L3
 	pushl	%ebp
 	movl	%esp, %ebp
-	subl	$56, %esp
+	subl	$16, %esp
     pushl   %ebx
     pushl   %esi
     pushl   %edi
 	movl	16(%ebp), %eax
 	movl	8(%ebp), %ecx
 	movl	(%ecx,%eax,4), %eax
-	movl	%eax, -20(%ebp)
+	movl	%eax, -4(%ebp)
 	movl	12(%ebp), %esi
     movl    %esi, %edi
 	jmp	L6
 L8:
-	movl	-16(%ebp), %eax
 	movl	8(%ebp), %ecx
-	leal	(%ecx,%eax,4), %eax
+	leal	(%ecx,%edi,4), %eax
+
 	movl	(%eax), %edx
-	cmpl	%edx, -20(%ebp)		## if(Pivot <= A[y])
+	cmpl	%edx, -4(%ebp)		## if(Pivot <= A[y])
 	jle	L7
 
-    movl    -12(%ebp), %edx
-    leal    (%ecx,%edx,4), %edx
+    leal    (%ecx,%esi,4), %edx
+
     movl    (%edx), %ebx
-
     movl    (%eax), %ecx
-    movl    %ecx, (%edx)
 
+    movl    %ecx, (%edx)
     movl    %ebx, (%eax)
 
 	addl	$1, %esi		    ## ++x
 L7:
 	addl	$1, %edi    		## ++y
 L6:
-	movl	-16(%ebp), %eax		## Move y into %eax
-	cmpl	16(%ebp), %eax		## if(y <= End)
+	cmpl	16(%ebp), %edi		## if(y <= End)
 	jle	L8
-	movl	-12(%ebp), %eax		## Move x into %eax
-	leal	0(,%eax,4), %edx	## Calculate A[%eax] offset into %edx
-	movl	8(%ebp), %eax		## Move A pointer into %eax
-	addl	%edx, %eax			## Add offset %edx to %eax
-	movl	(%eax), %eax		## Move long in address %eax into %eax
-	movl	%eax, -24(%ebp)		## Move %eax into -24(%ebp) (Temp)
-	movl	16(%ebp), %eax		## Move End into %eax
-	leal	0(,%eax,4), %edx	## Calculate A[End] offset into %edx
-	movl	8(%ebp), %eax		## Move A pointer into %eax
-	addl	%edx, %eax			## Add offset %edx to %eax
-	movl	-12(%ebp), %edx		## Move x into %edx
-	leal	0(,%edx,4), %ecx	## Calculate A[%edx] offset into %ecx
-	movl	8(%ebp), %edx		## Move A pointer into %edx
-	addl	%ecx, %edx			## Add offset %ecx to %edx
-	movl	(%eax), %eax		## Move long in address %eax into %eax
-	movl	%eax, (%edx)		## Move %eax to address %edx
-	movl	16(%ebp), %eax		## Move End to %eax
-	leal	0(,%eax,4), %edx	## Calculate A[End] offset into %edx
-	movl	8(%ebp), %eax		## Move A pointer into %eax
-	addl	%eax, %edx			## Add %eax to offset %edx
-	movl	-24(%ebp), %eax		## Move Temp to %eax
-	movl	%eax, (%edx)		## Move %eax to address %edx
-	movl	-12(%ebp), %eax		## Move x into %eax
+
+    movl    8(%ebp), %ecx
+    leal    (%ecx,%esi,4), %eax
+    movl    16(%ebp), %edi
+    leal    (%ecx,%edi,4), %edx
+
+    movl    (%eax), %ecx
+    movl    (%edx), %ebx
+
+    movl    %ebx, (%eax)
+    movl    %ecx, (%edx)
+
+	movl	%esi, -4(%ebp)
+    popl    %edi
+    popl    %esi
+    popl    %ebx
+
+
+	movl	-4(%ebp), %eax		## Move x into %eax
 	subl	$1, %eax			## Subtract 1 from %eax
 	movl	%eax, 8(%esp)		## Move %eax into 8(%esp) (Parameter End)
 	movl	12(%ebp), %eax		## Move Start into %eax
@@ -90,17 +84,12 @@ L6:
 	movl	8(%ebp), %eax		## Move A pointer into %eax
 	movl	%eax, (%esp)		## Move %eax into (%esp) (Parameter * A)
 	call	__Z4SortPiii		## Recursive call #1
-	movl	-12(%ebp), %eax		## Move x into %eax
+	movl	-4(%ebp), %eax		## Move x into %eax
 	leal	1(%eax), %edx		## %edx = %eax + 1
 	movl	16(%ebp), %eax		## Move End into %eax
 	movl	%eax, 8(%esp)		## Move %eax into 8(%esp) (Parameter End)
 	movl	%edx, 4(%esp)		## Move %eax into 4(%esp) (Parameter Start)
-	movl	8(%ebp), %eax		## Move pointer A into %eax
-	movl	%eax, (%esp)		## Move %eax into (%esp) (Parameter * A)
 	call	__Z4SortPiii
-    popl    %edi
-    popl    %esi
-    popl    %ebx
 	leave
 L3:
 	ret

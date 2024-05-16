@@ -24,24 +24,22 @@ __Z4SortPiii:
 	cmpl	12(%esp), %eax		## if(Start >= End)
 	jge	L3
 	pushl	%ebp
-	movl	%esp, %ebp
-	subl	$4, %esp
     pushl   %ebx
     pushl   %esi
     pushl   %edi
-	movl	16(%ebp), %eax
-	movl	8(%ebp), %ecx
+	movl	16(%esp), %eax
+	movl	8(%esp), %ecx
 	movl	(%ecx,%eax,4), %eax
-	movl	%eax, -4(%ebp)
-	movl	12(%ebp), %esi
+	movl	%eax, %ebp
+	movl	12(%esp), %esi
     movl    %esi, %edi
 	jmp	L6
 L8:
-	movl	8(%ebp), %ecx
+	movl	8(%esp), %ecx
 	leal	(%ecx,%edi,4), %eax
 
 	movl	(%eax), %edx
-	cmpl	%edx, -4(%ebp)		## if(Pivot <= A[y])
+	cmpl	%edx, %ebp		## if(Pivot <= A[y])
 	jle	L7
 
     leal    (%ecx,%esi,4), %edx
@@ -56,12 +54,12 @@ L8:
 L7:
 	addl	$1, %edi    		## ++y
 L6:
-	cmpl	16(%ebp), %edi		## if(y <= End)
+	cmpl	16(%esp), %edi		## if(y <= End)
 	jle	L8
 
-    movl    8(%ebp), %ecx
+    movl    8(%esp), %ecx
     leal    (%ecx,%esi,4), %eax
-    movl    16(%ebp), %edi
+    movl    16(%esp), %edi
     leal    (%ecx,%edi,4), %edx
 
     movl    (%eax), %ecx
@@ -70,27 +68,27 @@ L6:
     movl    %ebx, (%eax)
     movl    %ecx, (%edx)
 
-
-	movl	%esi, %eax		## Move x into %eax
-	subl	$1, %eax			## Subtract 1 from %eax
-	movl	%eax, 8(%esp)		## Move %eax into 8(%esp) (Parameter End)
-	movl	12(%ebp), %eax		## Move Start into %eax
-	movl	%eax, 4(%esp)		## Move %eax into 4(%esp) (Parameter Start)
-	movl	8(%ebp), %eax		## Move A pointer into %eax
-	movl	%eax, (%esp)		## Move %eax into (%esp) (Parameter * A)
-	call	__Z4SortPiii		## Recursive call #1
-	movl	%esi, %eax		## Move x into %eax
-	leal	1(%eax), %edx		## %edx = %eax + 1
-	movl	16(%ebp), %eax		## Move End into %eax
-	movl	%eax, 8(%esp)		## Move %eax into 8(%esp) (Parameter End)
-	movl	%edx, 4(%esp)		## Move %eax into 4(%esp) (Parameter Start)
-	movl	8(%ebp), %eax		## Move pointer A into %eax
-	movl	%eax, (%esp)		## Move %eax into (%esp) (Parameter * A)
-	call	__Z4SortPiii
+	movl	%esi, %ebp
     popl    %edi
     popl    %esi
     popl    %ebx
-	leave
+
+	subl	$12, %esp
+	movl	%ebp, %eax		## Move x into %eax
+	subl	$1, %eax			## Subtract 1 from %eax
+	movl	%eax, 8(%esp)		## Move %eax into 8(%esp) (Parameter End)
+	movl	24(%esp), %eax		## Move Start into %eax
+	movl	%eax, 4(%esp)		## Move %eax into 4(%esp) (Parameter Start)
+	movl	20(%esp), %eax		## Move A pointer into %eax
+	movl	%eax, (%esp)		## Move %eax into (%esp) (Parameter * A)
+	call	__Z4SortPiii		## Recursive call #1
+	movl	%ebp, %eax		## Move x into %eax
+	leal	1(%eax), %edx		## %edx = %eax + 1
+	movl	28(%esp), %eax		## Move End into %eax
+	movl	%eax, 8(%esp)		## Move %eax into 8(%esp) (Parameter End)
+	movl	%edx, 4(%esp)		## Move %eax into 4(%esp) (Parameter Start)
+	call	__Z4SortPiii
+	popl	%ebp
 L3:
 	ret
 	.section	.text$_ZNSt6chrono8durationIxSt5ratioILx1ELx1000000EEEC1IxvEERKT_,"x"
