@@ -20,76 +20,74 @@ __ZNKSt6chrono8durationIxSt5ratioILx1ELx1000000000EEE5countEv:
 	.globl	__Z4SortPiii
 	.def	__Z4SortPiii;	.scl	2;	.type	32;	.endef
 __Z4SortPiii:
+	
 	movl	8(%esp), %eax
 	cmpl	12(%esp), %eax		## if(Start >= End)
-	jge	L3
-	pushl	%ebp
-    pushl   %ebx
-    pushl   %esi
-    pushl   %edi
-	movl	16(%esp), %eax
-	movl	8(%esp), %ecx
-	movl	(%ecx,%eax,4), %eax
-	movl	%eax, %ebp
-	movl	12(%esp), %esi
-    movl    %esi, %edi
-	jmp	L6
-L8:
-	movl	8(%esp), %ecx
-	leal	(%ecx,%edi,4), %eax
+	jge	L1
 
-	movl	(%eax), %edx
-	cmpl	%edx, %ebp		## if(Pivot <= A[y])
-	jle	L7
+	pushl	%ebp	## More registers
+	pushl	%ebx
+	pushl	%esi
+	pushl	%edi
 
-    leal    (%ecx,%esi,4), %edx
+	movl	28(%esp), %eax		## %eax = End
+	movl	20(%esp), %ecx		## %ecx = A
+	movl	(%ecx,%eax,4), %edi	## %edi = A[End]
 
-    movl    (%edx), %ebx
-    movl    (%eax), %ecx
+	movl	24(%esp), %ebp		## %ebp = Start
+	movl	%ebp, %esi			## %esi = %ebp
+L2:
+	movl	20(%esp), %ecx		## %ecx = A
+	leal	(%ecx,%esi,4), %eax	## %eax = &A[%esi]
+	movl	(%eax), %ebx
+	cmpl	%ebx, %edi			## if(%edi <= %ebx)
+	jle	L3
 
-    movl    %ecx, (%edx)
-    movl    %ebx, (%eax)
+	leal	(%ecx,%ebp,4), %edx	## %edx = &A[%ebp]
+	movl	(%edx), %ecx
 
-	addl	$1, %esi		    ## ++x
-L7:
-	addl	$1, %edi    		## ++y
-L6:
-	cmpl	16(%esp), %edi		## if(y <= End)
-	jle	L8
+	movl	%ecx, (%eax)
+	movl	%ebx, (%edx)
 
-    movl    8(%esp), %ecx
-    leal    (%ecx,%esi,4), %eax
-    movl    16(%esp), %edi
-    leal    (%ecx,%edi,4), %edx
+	addl	$1, %ebp
+L3:
+	addl	$1, %esi
 
-    movl    (%eax), %ecx
-    movl    (%edx), %ebx
+	cmpl	28(%esp), %esi		## if(%esi <= End)
+	jle L2
 
-    movl    %ebx, (%eax)
-    movl    %ecx, (%edx)
+	movl	20(%esp), %ecx		## %ecx = A
+	leal	(%ecx,%ebp,4), %eax ## %eax = &A[%ebp]
+	movl	28(%esp), %esi		## %esi = End
+	leal	(%ecx,%ebp,4), %edx ## %edx = &A[%esi]
+	
+    movl    (%eax), %ebx
+    movl    (%edx), %ecx
 
-	movl	%esi, %ebp
-    popl    %edi
-    popl    %esi
-    popl    %ebx
+    movl    %ebx, (%edx)
+    movl    %ecx, (%eax)
+
+	movl	(%esp), %edi
+	movl	4(%esp), %esi
+	movl	8(%esp), %ebx
+
+	subl	$1, %ebp
+	movl	%ebp, 8(%esp)
+	movl	24(%esp), %eax
+	movl	%eax, 4(%esp)
+	movl	20(%esp), %eax
+	movl	%eax, (%esp)
+	call	__Z4SortPiii
+
+	movl	28(%esp), %eax
+	movl	%eax, 8(%esp)
+	addl	$2, %ebp
+	movl	%ebp, 4(%esp)
+	call	__Z4SortPiii
 
 	subl	$12, %esp
-	movl	%ebp, %eax		## Move x into %eax
-	subl	$1, %eax			## Subtract 1 from %eax
-	movl	%eax, 8(%esp)		## Move %eax into 8(%esp) (Parameter End)
-	movl	24(%esp), %eax		## Move Start into %eax
-	movl	%eax, 4(%esp)		## Move %eax into 4(%esp) (Parameter Start)
-	movl	20(%esp), %eax		## Move A pointer into %eax
-	movl	%eax, (%esp)		## Move %eax into (%esp) (Parameter * A)
-	call	__Z4SortPiii		## Recursive call #1
-	movl	%ebp, %eax		## Move x into %eax
-	leal	1(%eax), %edx		## %edx = %eax + 1
-	movl	28(%esp), %eax		## Move End into %eax
-	movl	%eax, 8(%esp)		## Move %eax into 8(%esp) (Parameter End)
-	movl	%edx, 4(%esp)		## Move %eax into 4(%esp) (Parameter Start)
-	call	__Z4SortPiii
 	popl	%ebp
-L3:
+L1:
 	ret
 	.section	.text$_ZNSt6chrono8durationIxSt5ratioILx1ELx1000000EEEC1IxvEERKT_,"x"
 	.linkonce discard
